@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>Todo List</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .remove {
+      color: red;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>لیست کارها</h1>
+  <form id="todo-form">
+    <input type="text" id="todo-input" placeholder="افزودن کار جدید">
+    <button type="submit">افزودن</button>
+  </form>
+  <ul id="todo-list"></ul>
+
+  <script>
+    $(document).ready(function() {
+      
+      function loadTodos() {
+        var todos = JSON.parse(localStorage.getItem('todos')) || [];
+        todos.forEach(function(todo) {
+          addTodoToDOM(todo);
+        });
+      }
+
+
+      function addTodoToDOM(todo) {
+        var li = $('<li>').text(todo);
+        var removeBtn = $('<span>').text('x').addClass('remove');
+        removeBtn.on('click', function() {
+          $(this).parent().remove();
+          removeTodoFromStorage(todo);
+        });
+        li.append(removeBtn);
+        $('#todo-list').append(li);
+      }
+
+ 
+      function saveTodoToStorage(todo) {
+        var todos = JSON.parse(localStorage.getItem('todos')) || [];
+        todos.push(todo);
+        localStorage.setItem('todos', JSON.stringify(todos));
+      }
+
+   
+      function removeTodoFromStorage(todo) {
+        var todos = JSON.parse(localStorage.getItem('todos')) || [];
+        var newTodos = todos.filter(function(item) {
+          return item !== todo;
+        });
+        localStorage.setItem('todos', JSON.stringify(newTodos));
+      }
+
+     
+      $('#todo-form').on('submit', function(event) {
+        event.preventDefault();
+        var todo = $('#todo-input').val();
+        if (todo.trim().length > 0) {
+          addTodoToDOM(todo);
+          saveTodoToStorage(todo);
+          $('#todo-input').val('');
+        }
+      });
+
+      loadTodos();
+    });
+  </script>
+</body>
+</html>
